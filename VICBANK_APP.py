@@ -5,7 +5,7 @@ from VICBANK_MODULE import save_user_data as save, load_user_data as load, dump_
 account_numbers = [str(random.randint(1000000000, 9999999999)) for _ in range(500)]
 account_number = random.choice(account_numbers)
 
-unique_ids = [str(random.randint(00000, 9999)) for _ in range(500)]
+unique_ids = [str(random.randint(00000, 99999)) for _ in range(500)]
 unique_id = random.choice(unique_ids)
 
 """
@@ -17,7 +17,6 @@ Withdraw
 check account balance
 account detail
 """
-balance = 0
 bank_name = 'VICBANK'
 data_file_path = "VICBANK_DATABASE.json"
 acc_pin = None
@@ -91,14 +90,14 @@ def open_acount():
         THANK YOU FOR CHOOSING {bank_name}.
 
         You'll receive an sms with account number and detail soon\n""")
-
+                balance = 0
                 store_info = {"name": name.upper(),"marital status": marital_status.upper(),
                               "gender": gender.upper(), "email": email,
                               "state of residence": state_residence.upper(),
                               "state of origin": state_origin.upper(),
                               "date of birth": date_of_birth, "phone number":phone_number,
                               "BVN":bvn_number,"NIN":nin_number, "Unique ID": unique_id,
-                              "account number": account_number,"account balance": balance
+                              "account number": account_number, "account balance":balance
                               }
 
                 next_of_kin = {"name": name2, "phone number": phone_number2,
@@ -113,7 +112,6 @@ def open_acount():
 
 # THIS FUNCTION ALLOWS THE USER TO DEPOSIT MONEY TO THEIR ACCOUNT
 def deposit():
-    global balance
 
     deposit_amount = input("Enter the amount in dollars you want to deposit: ")
 
@@ -148,9 +146,10 @@ def deposit():
             print("processing transaction...\n")
             T.sleep(3)
 
+            balance = account_detail['account balance']
             deposit_amount = int(deposit_amount)
 
-            balance = balance + deposit_amount
+            balance += deposit_amount
 
             account_detail['account balance'] = balance
 
@@ -172,20 +171,22 @@ def deposit():
 def set_up_pin():
 
     global acc_pin
-    
+
     user_info = load(data_file_path)
-    special_code = input("Enter account number to continue: ")
+    special_code = input("Enter unique ID to continue: ")
 
     for account_detail in user_info:
 
         if special_code == account_detail['Unique ID']:
+
             print(f"welcome {account_detail['name']}\n")
-            acc_pin = account_detail["Transaction Pin"]
+
+            acc_pin = account_detail['Transaction Pin']
+
             input("Click Enter To Continue")
 
-
-
         if acc_pin:
+
             print(f"\nYou've already have a pin: your pin is {acc_pin}")
             input("Click Enter to continue")
             return
@@ -210,31 +211,35 @@ def set_up_pin():
 
             if pin != confirm_pin:
                 print("PIN DIDN'T MATCH")
-                continue
-
+                return
 
             acc_pin = confirm_pin
 
-            account_detail['Transaction Pin'] = acc_pin
+            for account_detail in user_info:
+                if account_detail['Unique ID'] == special_code:
+                    account_detail['Transaction Pin'] = acc_pin
+                    break
 
             dump(data_file_path, user_info)
 
             T.sleep(1)
+
             print("TRANSACTION PIN has been created successfully created\n")
 
             print(f"{acc_pin} is your transaction pin: for withdrawal and transfer\n")
+            return
+        input("click Enter to continue ")
+        break
 
-            input("click Enter to continue ")
-            break
-
-        else:
-            print("\nTOO MANY ATTEMPT")
-            input("Click Enter to proceed.")
+    else:
+        print("\nTOO MANY ATTEMPT")
+        input("Click Enter to proceed.")
 
 
 # THIS FUNCTION HELPS CUSTOMERS TO TRANSFER MONEY TO OTHER BANKS OR WITHIN VICBANK
 def transfer():
-    global balance
+    #global balance
+    #global acc_pin
 
     user_info = load(data_file_path)
 
@@ -245,7 +250,7 @@ def transfer():
         correct = False
 
         if special_code == account_detail['Unique ID']:
-            acc_pin = account_detail['Transaction Pin']
+            account_detail['Transaction Pin'] = acc_pin
             print(f"Welcome {account_detail['name']}\n")
             input("Click Enter to continue")
 
@@ -372,12 +377,11 @@ def acc_balance():
     for account_detail in user_info:
 
         if special_code != account_detail['Unique ID']:
-            print("INVALID ACCOUNT NUMBER. TRY AGAIN")
-            return
+            continue
 
-        print("""
+        print(f"""
 
-        CHECKING ACCOUNT BALANCE...\n""")
+   CHECKING ACCOUNT BALANCE FOR {account_detail['name']}...\n""")
         T.sleep(3)
 
         print(f"""
@@ -387,8 +391,10 @@ def acc_balance():
     
     """)
         input("Click Enter to continue ")
+        break
 
-
+    else:
+        print("INVALID ID: MAKE SURE TO COPY YOUR ID")
 # THIS FUNCTION GETS THE ACCOUNT INFORMATION OF CUSTOMER
 def acc_info():
 
