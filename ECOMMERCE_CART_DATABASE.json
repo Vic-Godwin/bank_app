@@ -1,0 +1,50 @@
+[
+    {
+        "name": "laptop",
+        "description": "macintosh model 2019",
+        "price": 1450.0,
+        "quantity": 1
+    },
+    {
+        "name": "iphone",
+        "description": "iphone 16 pro",
+        "price": 1200.0,
+        "quantity": 1
+    },
+    {
+        "name": "laptop",
+        "description": "macintosh model 2019",
+        "price": 1450.0,
+        "quantity": 1
+    },
+    {
+        "name": "iphone",
+        "description": "iphone 16 pro",
+        "price": 1200.0,
+        "quantity": 1
+    },
+    {
+        "name": "ipod",
+        "description": "apple's powerful music tool",
+        "price": 24.0,
+        "quantity": 1
+    },
+    {
+        "name": "laptop",
+        "description": "macintosh model 2019",
+        "price": 1450.0,
+        "quantity": 2
+    },
+    {
+        "name": "iphone",
+        "description": "iphone 16 pro",
+        "price": 1200.0,
+        "quantity": 1
+    },
+    {
+        "name": "ipod",
+        "description": "apple's powerful music tool",
+        "price": 24.0,
+        "quantity": 1
+    }
+]
