@@ -238,81 +238,82 @@ def set_up_pin():
 
 # THIS FUNCTION HELPS CUSTOMERS TO TRANSFER MONEY TO OTHER BANKS OR WITHIN VICBANK
 def transfer():
-    #global balance
-    #global acc_pin
+   correct = False  # Flag to check if the user is authenticated
 
-    user_info = load(data_file_path)
+   while not correct:
+       # Keep looping until a valid ID is entered
+       special_code = input("Please Enter unique ID to proceed: ")
+       user_info = load(data_file_path)
 
-    special_code = input("Please Enter unique id to proceed: ")
-
-    for account_detail in user_info:
-
-        correct = False
+       for account_detail in user_info:
 
         if special_code == account_detail['Unique ID']:
-            account_detail['Transaction Pin'] = acc_pin
-            print(f"Welcome {account_detail['name']}\n")
-            input("Click Enter to continue")
+               correct = True  # Mark as authenticated
+               print(f"Welcome {account_detail['name']}\n")
+               input("Click Enter to continue")
+
+               # Check if the transaction pin exists
+               if not account_detail.get('Transaction Pin'):
+                   print("Transaction Pin is missing!")
+                   input("Click Enter to Set up Pin")
+                   set_up_pin()
+                   break
+
+        if not correct:
+            print("Invalid ID, please try again.")  # Message for incorrect ID
 
 
 
-            if not acc_pin:
-                print("PLEASE SET UP ACCOUNT PIN FIRST!")
-                input("Click Enter to proceed to PIN SET UP page.\n")
-                set_up_pin()
-                return
+        print(f"Your about to transfer money from your {bank_name} acount\n")
+        recipient_acc_num = input("Enter receiver's account number: ")
 
-            if acc_pin:
-                print(f"Your about to transfer money from your {bank_name} acount\n")
+        if len(recipient_acc_num) != 10 or not recipient_acc_num.isdigit():
 
-                recipient_acc_num = input("Enter receiver's account number: ")
+            print("\nINVALID ACCOUNT NUMBER. number must be 10 digit and must contain only number")
+            return
 
-                if len(recipient_acc_num) != 10 or not recipient_acc_num.isdigit():
-                    print("\nINVALID ACCOUNT NUMBER. number must be 10 digit and must contain only number")
-                    return
+        print(f"\nCHECKING FOR {bank_name} USER WITH ACCOUNT {recipient_acc_num}")
+        T.sleep(2)
 
-                print(f"\nCHECKING FOR {bank_name} USER WITH ACCOUNT {recipient_acc_num}")
-                T.sleep(2)
+        name_user = ['Mary bent', 'John Trump', 'Eva Martin', 'Peter Parker']
+        user = random.choice(name_user)
 
-                name_user = ['Mary bent', 'John Trump', 'Eva Martin', 'Peter Parker']
-                user = random.choice(name_user)
+        print(f"Found: {user}\nclick enter to confirm\n")
+        input()
 
-                print(f"Found: {user}\nclick enter to confirm\n")
-                input()
+        transfer_amount = input("Enter the amount: ")
 
-                transfer_amount = input("Enter the amount: ")
+        if not transfer_amount.isdigit() or int(transfer_amount) <= 0:
+            print("\nINVALID AMOUNT! Enter a valid amount")
+            return
 
-                if not transfer_amount.isdigit() or int(transfer_amount) <= 0:
-                    print("\nINVALID AMOUNT! Enter a valid amount")
-                    return
+        your_pin = input("Enter your VICBANK Transfer pin: ")
 
-                your_pin = input("Enter your VICBANK Transfer pin: ")
+        if your_pin != acc_pin:
+            print("INVALID PIN. PLEASE CHECK YOUR PIN PROPERLY.")
+            return
 
-                if your_pin != acc_pin:
-                    print("INVALID PIN. PLEASE CHECK YOUR PIN PROPERLY.")
-                    return
+        transfer_amount = int(transfer_amount)
+        balance = account_detail['account balance']
 
-                transfer_amount = int(transfer_amount)
-                balance = account_detail['account balance']
-
-                if balance < transfer_amount:
-                    print("INSUFFICIENT BALANCE! ")
-                    return
+        if balance < transfer_amount:
+           print("INSUFFICIENT BALANCE! ")
+           return
 
 
-                balance = balance - transfer_amount
-                account_detail['account balance'] = balance
+        balance = balance - transfer_amount
+        account_detail['account balance'] = balance
 
-                dump(data_file_path, user_info)
+        dump(data_file_path, user_info)
 
-                print("\nPROCESSING TRANSFER...")
-                T.sleep(3)
+        print("\nPROCESSING TRANSFER...")
+        T.sleep(3)
 
-                print("TRANSFER SUCCESSFUL\n")
-                T.sleep(.4)
+        print("TRANSFER SUCCESSFUL\n")
+        T.sleep(.4)
 
-                print(f"Your {bank_name} acount balance is ${balance}\n")
-                input("Click Enter to Continue: ")
+        print(f"Your {bank_name} acount balance is ${balance}\n")
+         input("Click Enter to Continue: ")
 
 
 # THIS FUNCTION ENABLES CUSTOMERS TO WITHDRAW THEIR MONEY
